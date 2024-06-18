@@ -5,15 +5,15 @@ import {InputBox} from './components';
 
 function App() {
 
-
+  
   const [amount, setAmount] = useState("")
   const [From, setFrom] = useState("usd")
   const [to, setTo] = useState("inr")
   const [convertedAmount, setConvertedAmount] = useState("")
 
   const currenyInfo =  useCurrencyInfo(From)
-  console.log(currenyInfo);
   const options = Object.keys(currenyInfo)
+  // console.log(currenyInfo);
 
   const swap = () => {
     setFrom(to)
