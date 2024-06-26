@@ -42,7 +42,6 @@ export class AuthService {
         } catch (error) {
             console.log("appwrite error :: error", error)
         }
-
         return null;
     }
 
