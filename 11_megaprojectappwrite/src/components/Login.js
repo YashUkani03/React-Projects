@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login as authLogin } from '../store/authSlice';
 import { Button, Input, Logo } from './index'
 import authService from '../appwrite/auth';
@@ -34,7 +34,6 @@ function Login() {
                     <span className='inline-block w-full max-w-[100px]'>
                         <Logo width='100%' />
                     </span>
-
                 </div>
                 <h2 className='text-center text-2xl font-bold leading-tight'>
                     Sign in to your account
@@ -66,13 +65,17 @@ function Login() {
                             type="password"
                             {...register("password", {
                                 required: true,
+                                validate: {
+                                    matchPatern : (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 
+                                    "Passwrd is not Valid. Use Characters for strong password"
+                                }
                             })}
                         />
-                        <button
+                        <Button
                             type='submit'
                             className='w-full'>
                             Sign in
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>
@@ -80,4 +83,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Login;

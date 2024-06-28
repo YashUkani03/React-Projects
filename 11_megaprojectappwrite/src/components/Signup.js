@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../store/authSlice'
 import { Button, Input, Logo } from './index'
 import { useDispatch } from 'react-redux'
-import { set, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 function Signup() {
     const [error, setError] = useState()
@@ -19,10 +19,10 @@ function Signup() {
             const session = await authService.CreateUser(data)
             if (session) {
                 const userData = await authService.getCurrentUser()
-            }
-            if (userData) {
-                dispatch(login(userData))
-                navigate('/')
+                if (userData) {
+                    dispatch(login(userData))
+                    navigate('/')
+                }
             }
         } catch (error) {
             setError(error)
@@ -77,11 +77,11 @@ function Signup() {
                                 required: true
                             })}
                         />
-                        <button
+                        <Button
                             type='submit'
                             className='w-full'>
                             Create Account
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>
