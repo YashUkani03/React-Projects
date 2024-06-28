@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, Input, Select, RTE } from '../index';
-import service from '../../appwrite/configure';
+import appwriteService from '../../appwrite/configure';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
@@ -19,7 +19,7 @@ function PostForm({ post }) {
     })
 
     const navigate = useNavigate()
-    const userData = useSelector((state) => state.user.userData)
+    const userData = useSelector((state) => state.auth.userData)
 
     // if (!userData) {
     //     console.log("Error Detacted");
@@ -28,16 +28,15 @@ function PostForm({ post }) {
 
     const submit = async (data) => {
         try {
-            let fileId;
             if (post) {
                 console.log("hello");
 
-                const file = data.image[0] ? service.uploadFile(data.image[0]) : null
+                const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null
                 if (file) {
-                    service.deleteFile(post.featuredImage)
+                    appwriteService.deleteFile(post.featuredImage)
                 }
 
-                const dbPost = await service.updatePost(post.$id, {
+                const dbPost = await appwriteService.updatePost(post.$id, {
                     ...data,
                     featuredImage: file ? file.$id : undefined,
                 })
@@ -46,30 +45,22 @@ function PostForm({ post }) {
                 }
             } else {
                 console.log("heloo");
-                // const newData = await service.uploadFile(data.image[0]);
-                // console.log("heloo");
+                const File = await appwriteService.uploadFile(data.image[0]);
+                console.log(File);
+                console.log("heloo");
 
-                // if (newData) {
-                //     const fileId = newData.$id
-                //     data.featuredImage = fileId
-                //     const dbPost = await service.createPost({
-                //         ...data,
-                //         userId: userData.$id
-                //     })
-                //     if (dbPost) {
-                //         navigate(`./post/${dbPost.$id}`)
-                //     }
-                const newData = {
-                    ...data,
-                    featuredImage: fileId,
-                    userId: userData.$id,
-                };
-                const dbPost = await service.createPost(newData);
-                if (dbPost) {
-                    navigate(`/post/${dbPost.$id}`);
+                if (File) {
+                    const fileId = File.$id
+                    data.featuredImage = fileId
+                    const dbPost = await appwriteService.createPost({
+                        ...data,
+                        userId: userData.$id
+                    })
+                    if (dbPost) {
+                        navigate(`./post/${dbPost.$id}`)
+                    }
                 }
             }
-
         } catch (error) {
             console.log("error ,Something whent wrong");
         }
@@ -84,7 +75,7 @@ function PostForm({ post }) {
                 .replace(/\s/g, '-')
 
         return ''
-    },[])
+    }, [])
 
 
     useEffect(() => {
@@ -124,7 +115,6 @@ function PostForm({ post }) {
             </div>
 
             <div className="w-1/3 px-2">
-                radom
                 <Input
                     label="Featured Image :"
                     type='file'
@@ -132,12 +122,11 @@ function PostForm({ post }) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                 // {...register("image")}
                 />
-                random
                 {/* // watch out after start */}
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={service.getFilePreview(post.featuredImage)}
+                            src={appwriteService.getFilePreview(post.featuredImage)}
                             alt={post.title}
                             className="rounded-lg"
                         />
