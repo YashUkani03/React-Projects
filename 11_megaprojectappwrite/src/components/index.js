@@ -7,7 +7,7 @@ import RTE from './RTE';
 import Signup from '../components/Signup';
 import Select from '../components/Select';
 import Login from '../components/Login';
-import PostForm from "./post-form/PostForm";
+import PostForm from './post-form/PostForm.js'
 import PostCard from './PostCard';
 import AuthLayout from './AuthLayout';
 import Input from './Input';

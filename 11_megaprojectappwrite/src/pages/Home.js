@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import appwriteService from '../appwrite/configure'
-import { Container, PostCard } from '../components'
+import service from '../appwrite/configure'
+import { Container , PostCard} from '../components'
 
 function Home() {
     const [posts, setPosts] = useState([])
 
     useEffect(() => {
-        appwriteService.getPosts().then((post) => {
+        service.getPosts().then((post) => {
             if (post) {
-                setPosts(posts.documents)
+                setPosts(post.documents)
             }
         })
     })
-    if (posts.length === 0) {
+    if (!posts) {
         return (
             <div className='w-full py-8 mt-4 text-center'>
                 <Container>

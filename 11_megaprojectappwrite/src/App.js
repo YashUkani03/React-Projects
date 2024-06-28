@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import { useDispatch } from "react-redux"
 import authService from './appwrite/auth';
 import { login, logout } from './store/authSlice'
 import { Footer, Header } from './components';
+import { Outlet } from 'react-router-dom';
 
 
 function App() {
@@ -29,12 +29,12 @@ function App() {
         <div className='w-full block'>
           <Header />
           <main className='text-center'>
-           TODO: {/* <Outlet /> */}
+           TODO: <Outlet />
           </main>
           <Footer />
         </div>
       </div>
-  ) : "null"
+  ) : null
 }
 
 export default App;

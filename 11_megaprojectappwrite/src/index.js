@@ -5,14 +5,15 @@ import App from './App';
 import { Provider } from 'react-redux';
 import store from "./store/store"
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { AuthLayout, Login } from './components';
+import { AuthLayout } from './components';
 // import { Home, AddPosts, AllPosts, Post,  Editposts  } from './pages'
 import Home from './pages/Home';
 import Sign from './pages/Sign';
 import AddPosts from './pages/AddPosts'
 import Editposts from './pages/Editposts'
-import Post  from './pages/Post'
-import AllPosts  from './pages/Allposts'
+import Post from './pages/Post'
+import AllPosts from './pages/Allposts'
+import Signin from './pages/Signin';
 
 
 const router = createBrowserRouter([
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
         path: '/login',
         element: (
           <AuthLayout authentication={false}>
-            <Login />
+            <Signin />
           </AuthLayout>
         )
       },
@@ -42,9 +43,10 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: '/add-posts',
+        path: '/add-post',
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication>
+            {""}
             <AddPosts />
           </AuthLayout>
         )
@@ -52,7 +54,8 @@ const router = createBrowserRouter([
       {
         path: '/all-posts',
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication>
+            {""}
             <AllPosts />
           </AuthLayout>
         )
@@ -60,7 +63,7 @@ const router = createBrowserRouter([
       {
         path: '/edit-post/:slug',
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication>
             <Editposts />
           </AuthLayout>
         )
@@ -68,7 +71,7 @@ const router = createBrowserRouter([
       {
         path: 'post/:slug',
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication>
             <Post />
           </AuthLayout>
         )
@@ -76,6 +79,47 @@ const router = createBrowserRouter([
     ]
   }
 ])
+
+
+// const router = createBrowserRouter(
+//   createRoutesFromElements(
+//     <Route path='/' element={<App />} />,
+//     <Route path='' element={<Home />} />,
+//     <Route path='/login' element={
+//       <AuthLayout authentication={true}>
+//         <Signin />
+//       </AuthLayout>
+//     } />,
+//     <Route path='/signup' element={
+//       <AuthLayout authentication={true}>
+//         <Sign />
+//       </AuthLayout>
+//     } />,
+//     <Route path='/add-posts' element={
+//       <AuthLayout>
+//         <AddPosts />
+//       </AuthLayout>
+//     } />,
+//     <Route path='/all-posts' element={
+//       <AuthLayout>
+//         <AllPosts />
+//       </AuthLayout>
+//     } />,
+//     <Route path='/edit-posts' element={
+//       <AuthLayout>
+//         <Editposts />
+//       </AuthLayout>
+//     } />,
+//     <Route path='/post' element={
+//       <AuthLayout>
+//         <Post />
+//       </AuthLayout>
+//     } />,
+
+//   )
+// )
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -65,7 +65,7 @@ function Signup() {
                             {...register("email", {
                                 required: true,
                                 validate: {
-                                    matchPatern: (value) => /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
+                                    matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
                                 }
                             })}
                         />
@@ -79,7 +79,7 @@ function Signup() {
                         />
                         <Button
                             type='submit'
-                            className='w-full'>
+                            className='w-full mt-4'>
                             Create Account
                         </Button>
                     </div>

@@ -55,7 +55,7 @@ function Login() {
                             {...register("email", {
                                 required: true,
                                 validate: {
-                                    matchPatern: (value) => /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
+                                    matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
                                 }
                             })}
                         />
@@ -66,8 +66,8 @@ function Login() {
                             {...register("password", {
                                 required: true,
                                 validate: {
-                                    matchPatern : (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 
-                                    "Passwrd is not Valid. Use Characters for strong password"
+                                    // matchPatern : (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) || 
+                                    // "Passwrd is not Valid. Use Characters for strong password"
                                 }
                             })}
                         />
