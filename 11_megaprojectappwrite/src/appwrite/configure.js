@@ -47,7 +47,7 @@ export class Service {
                     title,
                     content,
                     featuredImage,
-                    status
+                    status,
                 }
             )
 
@@ -83,18 +83,19 @@ export class Service {
         }
     }
 
-    async getPosts(queries) {
+    async getPosts(queries = [Query.equal('status' , 'active')]) {
         try {
             return await this.Databases.listDocuments(
                 config.appwriteDatabaseID,
                 config.appwriteCollectionID,
-                queries = [Query.equal("status", "active")]
+                // config.appwriteBucketID,
+                queries
             )
         } catch (error) {
             console.log("appwrite :: getPosts :: error", error);
 
+            return false
         }
-        return false
     }
 
     // file upload methods
@@ -108,8 +109,8 @@ export class Service {
             )
         } catch (error) {
             console.log("Appwrite error :: uploadFile :: error ", error);
-            return false
         }
+        return false
     }
 
     async deleteFile(fileId) {
@@ -120,7 +121,7 @@ export class Service {
             )
             return true
         } catch (error) {
-            console.log("Appwrite error :: deleteFile :: error", error);
+            console.log("Appwrite error :: deleteFile :: error", error.message);
         }
     }
 
@@ -132,5 +133,5 @@ export class Service {
     }
 }
 
-const   appwriteService = new Service();
+const appwriteService = new Service();
 export default appwriteService;

@@ -11,9 +11,9 @@ import Home from './pages/Home';
 import Sign from './pages/Sign';
 import AddPosts from './pages/AddPosts'
 import Editposts from './pages/Editposts'
-import Post from './pages/Post'
 import AllPosts from './pages/Allposts'
 import Signin from './pages/Signin';
+import Post from './pages/Post';
 
 
 const router = createBrowserRouter([
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: '/',
+        path: '/home',
         element: <Home />
       },
       {
@@ -52,7 +52,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: '/all-posts',
+        path: '/post',
         element: (
           <AuthLayout authentication>
             {""}
@@ -69,7 +69,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: 'post/:slug',
+        path: '/post/:slug',
         element: (
           <AuthLayout authentication>
             <Post />

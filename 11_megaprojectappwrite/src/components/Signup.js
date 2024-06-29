@@ -25,7 +25,7 @@ function Signup() {
                 }
             }
         } catch (error) {
-            setError(error)
+            setError(error.message || 'Something went Wrong')
         }
 
     }

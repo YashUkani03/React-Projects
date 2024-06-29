@@ -29,7 +29,6 @@ function PostForm({ post }) {
     const submit = async (data) => {
         try {
             if (post) {
-                console.log("hello");
 
                 const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null
                 if (file) {
@@ -41,28 +40,27 @@ function PostForm({ post }) {
                     featuredImage: file ? file.$id : undefined,
                 })
                 if (dbPost) {
-                    navigate(`./post/${dbPost.$id}`)
+                    navigate(`/posts/${dbPost.$id}`)
                 }
             } else {
-                console.log("heloo");
                 const File = await appwriteService.uploadFile(data.image[0]);
-                console.log(File);
-                console.log("heloo");
 
                 if (File) {
                     const fileId = File.$id
                     data.featuredImage = fileId
                     const dbPost = await appwriteService.createPost({
                         ...data,
-                        userId: userData.$id
+                        userId : userData.$id
                     })
+                    console.log(userData.$id);
+                    console.log(data.userId)
                     if (dbPost) {
-                        navigate(`./post/${dbPost.$id}`)
+                        navigate(`/post/${dbPost.$id}`)
                     }
                 }
             }
         } catch (error) {
-            console.log("error ,Something whent wrong");
+            console.log("error ,Something whent wrong", error);
         }
 
     }
@@ -120,7 +118,7 @@ function PostForm({ post }) {
                     type='file'
                     className="mb-4"
                     accept="image/png, image/jpg, image/jpeg, image/gif"
-                // {...register("image")}
+                    {...register("image")}
                 />
                 {/* // watch out after start */}
                 {post && (
