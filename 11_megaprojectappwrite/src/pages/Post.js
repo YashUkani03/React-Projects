@@ -12,8 +12,9 @@ export default function Post() {
 
     const userData = useSelector((state) => state.auth.userData);
 
-    const isAuthor = post && userData ? post.userId === userData.$id : false;
-
+    const isAuthor = post && userData ? post.slug === userData.$id : false;
+    // console.log(isAuthor)
+    // console.log(post);
     useEffect(() => {
         if (slug) {
             appwriteService.getPost(slug).then((post) => {
@@ -39,7 +40,7 @@ export default function Post() {
                     <img
                         src={appwriteService.getFilePreview(post.featuredImage)}
                         alt={post.title}
-                        className="rounded-xl"
+                        className="rounded-xl "
                     />
 
                     {isAuthor && (

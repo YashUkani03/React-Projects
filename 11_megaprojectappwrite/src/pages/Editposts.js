@@ -10,13 +10,13 @@ function Editposts() {
 
     useEffect(() => {
         if (slug) {
-            appwriteService.getPost(slug).then((slug) => {
+            appwriteService.getPost(slug).then((post) => {
                 if (post) {
                     setPost(post)
                 }
             })
         }
-    }, [slug, navigate ,post])
+    }, [slug, navigate ])
     return post ? (
         <div className='py-8'>
             <Container>
