@@ -17,7 +17,8 @@ export class AuthService {
             console.log("Helloo");
             const userAccount = await this.account.create(ID.unique(), email, password, name)
             if (userAccount) {
-                // method
+                // method 
+                console.log("Inside it");
                 return this.login({ email, password })
             }
             else {
@@ -42,8 +43,8 @@ export class AuthService {
         } catch (error) {
             console.log("appwrite error :: getCurrentUser :: error", error)
             // throw error
+            return null;
         }
-        return null;
     }
 
     async logout() {

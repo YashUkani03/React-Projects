@@ -15,25 +15,25 @@ function App() {
     authService.getCurrentUser()
       .then((userData) => {
         if (userData) {
-          dispatch(login({ userData }))
+          dispatch(login(userData))
         }
         else {
           dispatch(logout())
         }
       })
-      .finally(() => setLoading(false) )
+      .finally(() => setLoading(false))
   })
 
   return !loading ? (
-      <div className='min-h-screen flex flex-wrap content-between bg-gray-500'>
-        <div className='w-full block'>
-          <Header />
-          <main className='text-center'>
-           TODO: <Outlet />
-          </main>
-          <Footer />
-        </div>
+    <div className='min-h-screen flex flex-wrap content-between bg-gray-500'>
+      <div className='w-full block'>
+        <Header />
+        <main className='text-center'>
+          TODO: <Outlet />
+        </main>
+        <Footer />
       </div>
+    </div>
   ) : null
 }
 
