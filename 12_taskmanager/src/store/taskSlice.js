@@ -28,11 +28,11 @@ const taskSlice = createSlice({
         },
 
         toggleTask: (state) => {
-            state.tasks = state.tasks.map((prev) => prev.id === id ? {...prev , completed : !prev.completed}  : false)  
+            state.tasks = state.tasks.map((prev) => prev.id === state.id ? { ...prev, completed: !prev.completed } : false)
         }
     }
 })
 
-export const { addTask , removeTask , updateTask , toggleTask } = taskSlice.actions
+export const { addTask, removeTask, updateTask, toggleTask } = taskSlice.actions
 
 export default taskSlice.reducer
