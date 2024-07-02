@@ -1,99 +1,37 @@
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { useForm } from 'react-hook-form';
-// import { useDispatch } from 'react-redux';
-// import { login } from '../store/authSlice'
-
-// function Signup() {
-
-//     const { register, handleSubmit } = useForm()
-//     const dispatch = useDispatch()
-//     const singup = () => {
-//         console.log("hello");
-//         dispatch(login())
-//     }
-//     return (
-//         <div className='flex items-center justify-center w-full'>
-//             <div className={'w-full mx-auto max-w-lg bg-gray-100 rounded-lg p-10 border border-black/10'}>
-//                 <div className='mb-2 flex justify-center'>
-//                     <span className='inline-block w-full max-w-[100px]'>
-//                     </span>
-//                 </div>
-//                 <h2 className='text-center text-2xl font-bold leading-tight'>
-//                     Sign up to create account
-//                 </h2>
-//                 <p className='mt-2 text-center text-base text-black/60'>
-//                     Already have an account?&nbsp;
-//                     <Link to={"/login"}
-//                         className='font-medium text-primary transition-all duration-200 hover:underline'>
-//                         Sign Up
-//                     </Link>
-//                 </p>
-//                 {error && <p className='text-red-600 mt-8 text-center' >
-//                     {error}</p>}
-//                 <form onSubmit={handleSubmit(singup)}>
-//                     <div className='spcae-y-5'>
-//                         <Input
-//                             label='Full Name:'
-//                             placeholder="Enter your Full Name"
-//                             {...register("name", {
-//                                 required: true
-//                             })}
-//                         />
-//                         <Input
-//                             label='Email'
-//                             placeholder='Enter your email address'
-//                             type='email'
-//                             {...register("email", {
-//                                 required: true,
-//                                 validate: {
-//                                     matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
-//                                 }
-//                             })}
-//                         />
-//                         <Input
-//                             label="Password"
-//                             placeholder="Enter your password"
-//                             type='password'
-//                             {...register('password', {
-//                                 required: true
-//                             })}
-//                         />
-//                         <Button
-//                             type='submit'
-//                             className='w-full mt-4'>
-//                             Create Account
-//                         </Button>
-//                     </div>
-//                 </form>
-//             </div>
-//         </div>
-//     )
-// }
-
-// export default Signup
-
-
 import React, { useState } from 'react';
 // import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Container, Link as RouterLink } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import authService from '../appwrite/auth';
+import { login } from '../store/authSlice';
+import { useNavigate } from 'react-router-dom'
+import config from '../config/config';
+
 
 function Signup() {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate()
+    const { register, handleSubmit } = useForm();
+    const dispatch = useDispatch();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle signup logic here
-        if (password !== confirmPassword) {
-            alert('Passwords do not match');
-            return;
+    const singup = async (data) => {
+        setError('')
+        try {
+            console.log(config.appwriteURL);
+            console.log(config.appwriteProjectID);
+            const session = await authService.CreateUser(data)
+            if (session) {
+
+                const userAccount = await authService.getCurrentUser()
+                if (userAccount) {
+                    dispatch(login(userAccount))
+                    navigate('/')
+                }
+            }
+        } catch (error) {
+            setError(error.message || 'something went Wrong')
         }
-        console.log('Username:', username);
-        console.log('Email:', email);
-        console.log('Password:', password);
     };
 
     return (
@@ -120,19 +58,19 @@ function Signup() {
                     <Typography component="h1" variant="h5">
                         Sign Up
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    {error && <p className='text-red-600 mt-8 text-center' >
+                        {error}</p>}
+                    <Box component="form" onSubmit={handleSubmit(singup)} noValidate sx={{ mt: 1 }}>
                         <TextField
                             variant="outlined"
                             margin="normal"
-                            required
                             fullWidth
                             id="username"
                             label="Username"
                             name="username"
-                            autoComplete="username"
-                            autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            {...register("name", {
+                                required: true
+                            })}
                         />
                         <TextField
                             variant="outlined"
@@ -142,9 +80,12 @@ function Signup() {
                             id="email"
                             label="Email Address"
                             name="email"
-                            autoComplete="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            {...register("email", {
+                                required: true,
+                                validate: {
+                                    matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
+                                }
+                            })}
                         />
                         <TextField
                             variant="outlined"
@@ -155,9 +96,13 @@ function Signup() {
                             label="Password"
                             type="password"
                             id="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            {...register("password", {
+                                required: true,
+                                validate: {
+                                    matchPatern: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) ||
+                                        "Passwrd is not Valid. Use Characters for strong password"
+                                }
+                            })}
                         />
                         <TextField
                             variant="outlined"
@@ -168,9 +113,13 @@ function Signup() {
                             label="Confirm Password"
                             type="password"
                             id="confirmPassword"
-                            autoComplete="current-password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            {...register("password", {
+                                required: true,
+                                validate: {
+                                    matchPatern: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) ||
+                                        "Passwrd is not Valid. Use Characters for strong password"
+                                }
+                            })}
                         />
                         <Button
                             type="submit"
@@ -178,7 +127,7 @@ function Signup() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Sign Up
+                            Create Account
                         </Button>
                         <Typography variant="body2" align="center">
                             {"Already have an account? "}

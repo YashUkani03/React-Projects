@@ -1,10 +1,10 @@
 import React from 'react';
-import { Button, Typography, Link } from '@mui/material';
-import Header from './Header/Header';
+import { Button, Typography, Link, Box } from '@mui/material';
+// import Header from './Header/Header';
 
 function Home() {
     return (
-        <Header>
+        <Box>
             <div className="flex flex-col items-center justify-center h-screen bg-cover bg-center" style={{ backgroundImage: 'url()' }}>
                 <Typography variant="h2" gutterBottom>
                     Welcome to the Task Manager
@@ -16,7 +16,7 @@ function Home() {
                     <Button variant="contained">Go to Task List</Button>
                 </Link>
             </div>
-        </Header>
+        </Box>
     );
 }
 

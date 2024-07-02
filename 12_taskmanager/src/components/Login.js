@@ -1,18 +1,32 @@
 import React, { useState } from 'react';
 // import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Container, Link as RouterLink } from '@mui/material';
+import authService from '../appwrite/auth';
+import { useDispatch } from 'react-redux';
+import { login } from '../store/authSlice';
+import { useForm } from 'react-hook-form';
 
 function LoginForm() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const dispatch = useDispatch()
+    const [error, setError] = useState('');
+    const { register, handleSubmit } = useForm()
+    // const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle login logic here
-        console.log('Username:', username);
-        console.log('Password:', password);
-    };
-
+    const submit = async (data) => {
+        setError('')
+        try {
+            const session = authService.login(data)
+            if (session) {
+                const userAccount = await authService.getCurrentUser()
+                if (userAccount) {
+                    dispatch(login(userAccount))
+                }
+            }
+        }
+        catch (error) {
+            setError(error.message)
+        };
+    }
     return (
         <Box
             sx={{
@@ -37,7 +51,9 @@ function LoginForm() {
                     <Typography component="h1" variant="h5">
                         Login in your Account
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    {error && <p className='text-red-600 mt-8 text-center'>{error}</p>}
+
+                    <Box component="form" onSubmit={handleSubmit(submit)} noValidate sx={{ mt: 1 }}>
                         <TextField
                             variant="outlined"
                             margin="normal"
@@ -46,10 +62,16 @@ function LoginForm() {
                             id="username"
                             label="Username"
                             name="username"
-                            autoComplete="username"
-                            autoFocus
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            // autoComplete="username"
+                            // autoFocus
+                            // value={input}
+                            {...register('email', {
+                                required: true,
+                                validate: {
+                                    matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
+                                }
+                            })}
+                        // onChange={(e) => setInput(e.target.value)}
                         />
                         <TextField
                             variant="outlined"
@@ -60,9 +82,16 @@ function LoginForm() {
                             label="Password"
                             type="password"
                             id="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            // autoComplete="current-password"
+                            // value={input}
+                            {...register("password", {
+                                required: true,
+                                validate: {
+                                    matchPatern: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value) ||
+                                        "Passwrd is not Valid. Use Characters for strong password"
+                                }
+                            })}
+                        // onChange={(e) => setInput(e.target.value)}
                         />
                         <Button
                             type="submit"

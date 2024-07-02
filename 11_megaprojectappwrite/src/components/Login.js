@@ -54,7 +54,7 @@ function Login() {
                             type='email'
                             {...register("email", {
                                 required: true,
-                                validate: {
+                                validate: { 
                                     matchPatern: (value) => /^([\w\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email address is not Valid"
                                 }
                             })}

@@ -15,11 +15,20 @@ export class AuthService {
 
     async CreateUser({ email, password, name }) {
         try {
+            // console.log("Hello HEre Doubt");
+            console.log(this.client);
             const userAccount = await this.account.create(ID.unique(), email, password, name)
+            console.log(this.account);
+            console.log(userAccount);
             if (userAccount) {
                 return this.login({ email, password })
             }
-        } catch (error) {
+
+            else {
+                return userAccount
+            }
+        }
+        catch (error) {
             console.log("Appwrite Error :: CreateUser :: error", error);
         }
     }
@@ -41,11 +50,11 @@ export class AuthService {
         }
     }
 
-    async getCurrentUser(){
+    async getCurrentUser() {
         try {
             return this.account.get()
         } catch (error) {
-            console.log("Appwrite Error :: getCurrentUser :: error" ,error);
+            console.log("Appwrite Error :: getCurrentUser :: error", error);
         }
     }
 }
