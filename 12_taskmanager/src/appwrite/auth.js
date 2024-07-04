@@ -1,4 +1,4 @@
-import config from '../config/config'
+import config from '../config/config';
 import { Client, Account, ID } from 'appwrite'
 
 export class AuthService {
@@ -9,7 +9,7 @@ export class AuthService {
         this.client
             .setEndpoint(config.appwriteURL)
             .setProject(config.appwriteProjectID);
-        this.account = new Account(this.account);
+        this.account = new Account(this.client);
     }
 
 
@@ -35,6 +35,8 @@ export class AuthService {
 
     async login({ email, password }) {
         try {
+            console.log(this.account);
+            console.log(email);
             return await this.account.createEmailPasswordSession(email, password)
         } catch (error) {
             console.log("Appwrite error :: Login :: error", error);

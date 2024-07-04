@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = {
     tasks: [{
         id: 1,
-        text: 'Task Completed',
-        completed: false
+        data: 'Task Completed',
+        status: 'completed'
     }]
 }
 
@@ -14,25 +14,27 @@ const taskSlice = createSlice({
     reducers: {
         addTask: (state, action) => {
             const task = {
-                text: action.payload
+                id : nanoid(),
+                data: action.payload,
+                status : 'pending'
             }
             state.tasks.push(task)
         },
 
-        removeTask: (state, action) => {
-            state.tasks = state.tasks.filter((task) => task.id !== action.payload)
+        removeTask: (state,id) => {
+            state.tasks = state.tasks.filter((task) => task.id !== id)
         },
 
-        updateTask: (state, action) => {
+        editTask: (state, action) => {
             state.tasks = state.tasks.map((prev) => prev.id === state.id ? action.payload : prev)
         },
 
         toggleTask: (state) => {
-            state.tasks = state.tasks.map((prev) => prev.id === state.id ? { ...prev, completed: !prev.completed } : false)
+            state.tasks = state.tasks.map((prev) => prev.id === state.id ? { ...prev, status: !prev.pending } : false)
         }
     }
 })
 
-export const { addTask, removeTask, updateTask, toggleTask } = taskSlice.actions
+export const { addTask, removeTask, editTask, toggleTask } = taskSlice.actions
 
 export default taskSlice.reducer

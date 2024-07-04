@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 // import { Link as RouterLink } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Container, Link as RouterLink } from '@mui/material';
 import authService from '../appwrite/auth';
-import { useDispatch } from 'react-redux';
+import { useDispatch, } from 'react-redux';
 import { login } from '../store/authSlice';
 import { useForm } from 'react-hook-form';
-
+import { useNavigate } from 'react-router-dom';
 function LoginForm() {
     const dispatch = useDispatch()
     const [error, setError] = useState('');
     const { register, handleSubmit } = useForm()
+    const navigate = useNavigate()
     // const [password, setPassword] = useState('');
 
     const submit = async (data) => {
@@ -20,6 +21,7 @@ function LoginForm() {
                 const userAccount = await authService.getCurrentUser()
                 if (userAccount) {
                     dispatch(login(userAccount))
+                    navigate('/')
                 }
             }
         }
@@ -59,9 +61,9 @@ function LoginForm() {
                             margin="normal"
                             required
                             fullWidth
-                            id="username"
-                            label="Username"
-                            name="username"
+                            id="email"
+                            label="Email"
+                            name="Email"
                             // autoComplete="username"
                             // autoFocus
                             // value={input}
