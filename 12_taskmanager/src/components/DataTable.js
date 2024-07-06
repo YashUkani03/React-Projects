@@ -4,14 +4,13 @@ import appwriteService from '../appwrite/configure';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useDispatch } from 'react-redux';
-// import { removeTask } from '../store/taskSlice';
-// import { useNavigate } from 'react-router-dom';
+
 const columns = [
     { field: 'id', headerName: 'ID', width: 60 },
-    { field: 'title', headerName: 'Title', width: 600 },
+    { field: 'title', headerName: 'Title', width: 550 },
     { field: 'startDate', headerName: 'Start Date', width: 150 },
     { field: 'dueDate', headerName: 'Due Date', width: 150 },
-    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'status', headerName: 'Status', width: 130 },
     {
         field: 'delete',
         headerName: 'Delete',
@@ -90,13 +89,14 @@ const DataTable = () => {
         fetchTasks();
 
     }, [setTasks, dispatch, tasks]);
-
     return (
         <div style={{ height: 625, width: '100%' }}>
             <DataGrid
                 rows={tasks}
                 columns={columns}
                 pageSize={5}
+                disableRowSelectionOnClick
+                hideFooterSelectedRowCount
                 localeText={localText}
             // checkboxSelection
             />
