@@ -1,38 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import appwriteService from '../appwrite/configure';
-import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'
-// import { useDispatch } from 'react-redux';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-
-const columns = [
-    { field: 'id', headerName: 'ID', width: 60 },
-    { field: 'title', headerName: 'Title', width: 550 },
-    { field: 'startDate', headerName: 'Start Date', width: 150 },
-    { field: 'dueDate', headerName: 'Due Date', width: 150 },
-    { field: 'status', headerName: 'Status', width: 130 },
-    {
-        field: 'delete',
-        headerName: 'Delete',
-        sortable: false,
-        width: 100,
-        renderCell: (task) => (
-            <IconButton
-                onClick={() => { task.row.onDelete(task.row.$id) }}
-                aria-label="delete"
-                disabled={task.row.isDeleting}
-            >
-                <DeleteIcon />
-            </IconButton>
-        ),
-    },
-
-];
-
-const localText = {
-    noRowsLabel: "No Tasks"
-}
+import DehazeIcon from '@mui/icons-material/Dehaze';
+import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const StatusGenerator = (startDate, dueDate) => {
     const today = new Date().setHours(0, 0, 0, 0)
@@ -51,87 +22,118 @@ const StatusGenerator = (startDate, dueDate) => {
 const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
-    reorder.splice(endIndex, 0, removed)
+    result.splice(endIndex, 0, removed)
 
-    console.log(result);
     return result
 }
 
-const getlisttask = (isDragging) => ({
-    background: isDragging ? 'lightblue' : '',
-    padding: 2,
-    height: 620, width: '100%'
-})
-
 const DataTable = () => {
-    // const dispatch = useDispatch();
     const [tasks, setTasks] = useState([])
-    const onDragEnd = (result) => {
-        const { source , destination} = result
-        if (!result.destination) {
-            return;
-        }
-
-        const reordedRow = reorder(tasks, source.index, destination.index)
-        console.log(reordedRow)
-        setTasks(reordedRow)
-    }
 
     useEffect(() => {
         const fetchTasks = async () => {
             try {
                 const documents = await appwriteService.getTasks();
-                const updateTasks = await documents.map((task) => ({
+                const updatedTasks = documents.map((task) => ({
                     ...task,
                     status: StatusGenerator(task.startDate, task.dueDate)
                 }))
-                // const response = await documents.map((task, index) => ({ id: task.$id, title: task.title, index }))
-                // console.log(response);
-                const handleDelete = async (id) => {
-                    if (id) {
-                        setTasks(tasks.map(task => ({
-                            ...task,
-                            isDeleting: task.id === id ? true : task.isDeleting
-                        })));
-                        await appwriteService.deleteTask(id)
-                    }
-                }
-                // Transform documents into rows compatible with DataGrid
-                const formattedRows = updateTasks?.map((doc, index) => ({
-                    id: index + 1,
-                    title: doc.title,
-                    startDate: doc.startDate,
-                    dueDate: doc.dueDate,
-                    status: doc.status,
-                    $id: doc.$id,
-                    onDelete: handleDelete,
-                }));
-
-
-                setTasks(formattedRows);
-                // setRows(response)
-
+                setTasks(updatedTasks);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             }
         };
         fetchTasks();
+    }, []);
 
-    }, [setTasks,]);
+    const handleDelete = async (id) => {
+        try {
+            // Optimistically update UI to mark task as deleting
+            setTasks(tasks.map(task =>
+                task.$id === id ? { ...task, isDeleting: true } : task
+            ));
 
+            // Delete task from database
+            await appwriteService.deleteTask(id);
+
+            // Update state to remove task from UI
+            setTasks(tasks.filter(task => task.$id !== id));
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            // Rollback UI changes if deletion fails
+            setTasks(tasks.map(task =>
+                task.$id === id ? { ...task, isDeleting: false } : task
+            ));
+        }
+    };
+
+    const onDragEnd = (result) => {
+        const { source, destination } = result
+        if (!result.destination) {
+            return;
+        }
+
+        const reorderedTasks = reorder(tasks, source.index, destination.index)
+        setTasks(reorderedTasks)
+    }
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId='tasks'>
-                {(provided, snapshot) => (
-                    <div style={getlisttask(snapshot.isDragging)} {...provided.droppableProps} ref={provided.innerRef}>
-                           
-                    </div>
+            <Droppable droppableId="droppable">
+                {(provided) => (
+                    <TableContainer component={Paper} {...provided.droppableProps} ref={provided.innerRef}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell width={10}></TableCell>
+                                    <TableCell width={600}>Title</TableCell>
+                                    <TableCell width={150}>Start Date</TableCell>
+                                    <TableCell width={150}>Due Date</TableCell>
+                                    <TableCell width={130}>Status</TableCell>
+                                    <TableCell width={30}></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {tasks.map((task, index) => (
+                                    <Draggable key={task.$id} draggableId={task.$id} index={index}>
+                                        {(provided, snapshot) => (
+                                            <TableRow
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                style={{
+                                                    ...provided.draggableProps.style,
+                                                    background: snapshot.isDragging ? 'lightblue' : ''
+                                                }}
+                                            >
+                                                <TableCell>
+                                                    <DehazeIcon />
+                                                </TableCell>
+                                                <TableCell>{task.title}</TableCell>
+                                                <TableCell>{task.startDate}</TableCell>
+                                                <TableCell>{task.dueDate}</TableCell>
+                                                <TableCell>{task.status}</TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        style={{ color: 'grey' }}
+                                                        onClick={() => handleDelete(task.$id)}
+                                                        disabled={task.isDeleting}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 )}
             </Droppable>
-        </DragDropContext >
-        // </div>
+        </DragDropContext>
     );
-}
+};
 
 export default DataTable;
