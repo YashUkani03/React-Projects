@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import appwriteService from '../appwrite/configure';
 import DeleteIcon from '@mui/icons-material/Delete'
 import DehazeIcon from '@mui/icons-material/Dehaze';
+import {Typography} from '@mui/material';
 import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -94,38 +95,48 @@ const DataTable = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {tasks.map((task, index) => (
-                                    <Draggable key={task.$id} draggableId={task.$id} index={index}>
-                                        {(provided, snapshot) => (
-                                            <TableRow
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                style={{
-                                                    ...provided.draggableProps.style,
-                                                    background: snapshot.isDragging ? 'lightblue' : ''
-                                                }}
-                                            >
-                                                <TableCell>
-                                                    <DehazeIcon />
-                                                </TableCell>
-                                                <TableCell>{task.title}</TableCell>
-                                                <TableCell>{task.startDate}</TableCell>
-                                                <TableCell>{task.dueDate}</TableCell>
-                                                <TableCell>{task.status}</TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        style={{ color: 'grey' }}
-                                                        onClick={() => handleDelete(task.$id)}
-                                                        disabled={task.isDeleting}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </Draggable>
-                                ))}
+                                {tasks.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6}>
+                                            <Typography variant="subtitle1" align="center">
+                                                No tasks
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    tasks.map((task, index) => (
+                                        <Draggable key={task.$id} draggableId={task.$id} index={index}>
+                                            {(provided, snapshot) => (
+                                                <TableRow
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    style={{
+                                                        ...provided.draggableProps.style,
+                                                        background: snapshot.isDragging ? 'lightblue' : ''
+                                                    }}
+                                                >
+                                                    <TableCell>
+                                                        <DehazeIcon />
+                                                    </TableCell>
+                                                    <TableCell>{task.title}</TableCell>
+                                                    <TableCell>{task.startDate}</TableCell>
+                                                    <TableCell>{task.dueDate}</TableCell>
+                                                    <TableCell>{task.status}</TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            style={{ color: 'grey' }}
+                                                            onClick={() => handleDelete(task.$id)}
+                                                            disabled={task.isDeleting}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </Draggable>
+                                    ))
+                                )}
                                 {provided.placeholder}
                             </TableBody>
                         </Table>
@@ -133,7 +144,8 @@ const DataTable = () => {
                 )}
             </Droppable>
         </DragDropContext>
-    );
+    )
+
 };
 
 export default DataTable;
