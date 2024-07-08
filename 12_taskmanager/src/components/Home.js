@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import appwriteService from '../appwrite/configure';
-import { Typography, Fab, Container, Link ,Box } from '@mui/material';
+import { Typography, Fab, Container, Link, Box, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
 import DataTable from './DataTable';
+import GridViewIcon from '@mui/icons-material/GridView';
 
 const HomePage = () => {
     const user = useSelector((state) => state.auth.userData);
@@ -24,30 +25,35 @@ const HomePage = () => {
         <Container>
             {!user ? (
                 <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100vh',
-                  backgroundImage: 'url(https://your-image-url.com)', // Replace with your background image URL
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              >
-                <Typography variant="h2" gutterBottom>
-                  Welcome to the Task Manager
-                </Typography>
-                <Typography variant="h5" paragraph>
-                  Manage your tasks efficiently and effectively.
-                </Typography>
-                
-              </Box>
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100vh',
+                        backgroundImage: 'url(https://your-image-url.com)', // Replace with your background image URL
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                >
+                    <Typography variant="h2" gutterBottom>
+                        Welcome to the Task Manager
+                    </Typography>
+                    <Typography variant="h5" paragraph>
+                        Manage your tasks efficiently and effectively.
+                    </Typography>
+
+
+                </Box>
             ) : (
                 <div><br />
-                    <Typography variant="h4" component="h1" gutterBottom>
+                    <Typography variant="h4" component="h1" gutterBottom >
                         Your Tasks
+                        <Button style={{marginLeft : 920}}>
+                            <GridViewIcon />
+                        </Button>
                     </Typography>
+
                     {tasks?.length === 0 ? (
                         <div className='flex  py-200 justify-center items-center align-center h-full' >
                             <Typography variant="body1" align='center'>

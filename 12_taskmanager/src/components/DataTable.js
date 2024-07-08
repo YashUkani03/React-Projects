@@ -20,6 +20,10 @@ const StatusGenerator = (startDate, dueDate) => {
     }
 }
 
+const formatdate = (date) => {
+    return new Date(date).toLocaleDateString()
+}
+
 const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
@@ -37,8 +41,11 @@ const DataTable = () => {
                 const documents = await appwriteService.getTasks();
                 const updatedTasks = documents.map((task) => ({
                     ...task,
-                    status: StatusGenerator(task.startDate, task.dueDate)
+                    status: StatusGenerator(task.startDate, task.dueDate),
+                    startDate : formatdate(task.startDate),
+                    dueDate : formatdate(task.dueDate)
                 }))
+                console.log(updatedTasks);
                 setTasks(updatedTasks);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
