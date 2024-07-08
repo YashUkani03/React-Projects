@@ -45,7 +45,6 @@ const DataTable = () => {
                     startDate : formatdate(task.startDate),
                     dueDate : formatdate(task.dueDate)
                 }))
-                console.log(updatedTasks);
                 setTasks(updatedTasks);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
