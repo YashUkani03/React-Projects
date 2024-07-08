@@ -3,7 +3,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import appwriteService from '../appwrite/configure';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 
 const columns = [
     { field: 'id', headerName: 'ID', width: 60 },
@@ -30,7 +31,7 @@ const columns = [
 ];
 
 const localText = {
-    noRowsLabel : "No Tasks"
+    noRowsLabel: "No Tasks"
 }
 
 const StatusGenerator = (startDate, dueDate) => {
@@ -47,9 +48,34 @@ const StatusGenerator = (startDate, dueDate) => {
     }
 }
 
+const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    reorder.splice(endIndex, 0, removed)
+
+    console.log(result);
+    return result
+}
+
+const getlisttask = (isDragging) => ({
+    background: isDragging ? 'lightblue' : '',
+    padding: 2,
+    height: 620, width: '100%'
+})
+
 const DataTable = () => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     const [tasks, setTasks] = useState([])
+    const onDragEnd = (result) => {
+        const { source , destination} = result
+        if (!result.destination) {
+            return;
+        }
+
+        const reordedRow = reorder(tasks, source.index, destination.index)
+        console.log(reordedRow)
+        setTasks(reordedRow)
+    }
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -59,6 +85,8 @@ const DataTable = () => {
                     ...task,
                     status: StatusGenerator(task.startDate, task.dueDate)
                 }))
+                // const response = await documents.map((task, index) => ({ id: task.$id, title: task.title, index }))
+                // console.log(response);
                 const handleDelete = async (id) => {
                     if (id) {
                         setTasks(tasks.map(task => ({
@@ -81,6 +109,7 @@ const DataTable = () => {
 
 
                 setTasks(formattedRows);
+                // setRows(response)
 
             } catch (error) {
                 console.error('Error fetching tasks:', error);
@@ -88,19 +117,20 @@ const DataTable = () => {
         };
         fetchTasks();
 
-    }, [setTasks, dispatch, tasks]);
+    }, [setTasks,]);
+
+
     return (
-        <div style={{ height: 625, width: '100%' }}>
-            <DataGrid
-                rows={tasks}
-                columns={columns}
-                pageSize={5}
-                disableRowSelectionOnClick
-                hideFooterSelectedRowCount
-                localeText={localText}
-            // checkboxSelection
-            />
-        </div>
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId='tasks'>
+                {(provided, snapshot) => (
+                    <div style={getlisttask(snapshot.isDragging)} {...provided.droppableProps} ref={provided.innerRef}>
+                           
+                    </div>
+                )}
+            </Droppable>
+        </DragDropContext >
+        // </div>
     );
 }
 

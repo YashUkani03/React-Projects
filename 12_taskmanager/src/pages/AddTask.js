@@ -31,7 +31,7 @@ const AddTask = (tasks) => {
 
 
     return (
-        <div className="container mx-auto mt-8">
+        <div className="container mx-auto mt-8 mb-80">
             <h1 className="text-2xl font-bold mb-4">Add New Task</h1>
             <form onSubmit={handleSubmit(create)} className="max-w-lg mx-auto">
                 <TextField
