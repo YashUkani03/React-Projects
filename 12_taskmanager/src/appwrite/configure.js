@@ -37,16 +37,17 @@ export class Service {
         }
     }
 
-    async updateTask(userId, { title, startDate, dueDate }) {
+    async updateTasks( userId, { title, startDate, dueDate , status }) {
         try {
             return await this.Databases.updateDocument(
-                config.appwriteDatabaseID,
-                config.appwriteCollectionID,
+                '6684d6f700124046455e',
+                '6684d7100004eb8bfcc1',
                 userId,
                 {
                     title,
                     startDate,
                     dueDate,
+                    status
                 }
             )
         } catch (error) {

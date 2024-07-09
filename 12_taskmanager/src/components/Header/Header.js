@@ -31,7 +31,7 @@ const Header = () => {
           <>
             <Button color="primary"  variant='contained' component={Link} to="/login">
               Login
-            </Button> &nbsp;
+            </Button> &nbsp;&nbsp;
             <Button color="primary" variant='contained' component={Link} to="/signup">
               Signup
             </Button>

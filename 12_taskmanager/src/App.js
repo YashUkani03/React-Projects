@@ -37,16 +37,4 @@ function App() {
 export default App;
 
 
-// import React from 'react'
-// import Taskslists from './pages/Tasklist'
-
-// function App() {
-//   return (
-//     <div className=''> 
-//       <Taskslists />
-//     </div>
-//   )
-// }
-
-// export default App;
 

@@ -1,26 +1,38 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import appwriteService from '../appwrite/configure';
-import { Typography, Fab, Container, Link, Box, Button } from '@mui/material';
+import { Typography, Fab, Container, Box, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
-import DataTable from './DataTable';
+import DataTable from '../components/DataTable';
 import GridViewIcon from '@mui/icons-material/GridView';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
     const user = useSelector((state) => state.auth.userData);
     const [tasks, setTasks] = useState([0])
+    const navigate = useNavigate()
 
     useEffect(() => {
-        appwriteService.getTasks([])
-            .then((task) => {
-                if (task) {
-                    setTasks(task.documents)
-                }
-            })
-    }, []);
+        if (user) {
 
+            appwriteService.getTasks([])
+                .then((task) => {
+                    if (task) {
+                        setTasks(task.documents)
+                    }
+                })
+        }
+    }, [user]);
 
+    const ChangePage = () => {
+        navigate("/columntable")
+    }
+
+    const handlelocation = () => { 
+        navigate('/add-task')
+    }
     return (
         <Container>
             {!user ? (
@@ -49,7 +61,9 @@ const HomePage = () => {
                 <div><br />
                     <Typography variant="h4" component="h1" gutterBottom >
                         Your Tasks
-                        <Button style={{marginLeft : 920}}>
+                        <Button style={{ marginLeft: 920 }}
+                            onClick={ChangePage}
+                        >
                             <GridViewIcon />
                         </Button>
                     </Typography>
@@ -61,11 +75,11 @@ const HomePage = () => {
                             </Typography>
                         </div>
                     ) : (
-                        // null
                         <DataTable />
                     )}
-                    <Link href='/add-task'>
+                    <Link>
                         <Fab
+                            onClick={handlelocation}
                             color="primary"
                             aria-label="add"
                             style={{

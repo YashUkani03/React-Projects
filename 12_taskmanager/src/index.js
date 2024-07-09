@@ -5,11 +5,11 @@ import App from './App';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Home from './components/Home';
+import Home from './pages/Home';
 import LoginForm from './components/Login';
 import Signup from './components/Signup';
 import AddTask from './pages/AddTask';
-import DataTable from './components/DataTable';
+import { ColumnTable } from './components';
 
 const router = createBrowserRouter([
   {
@@ -34,9 +34,10 @@ const router = createBrowserRouter([
         element: <AddTask />
       },
       {
-        path: '/table',
-        element: <DataTable />
-      },
+        path: '/columntable',
+        element: <ColumnTable />
+      }
+
     ]
   }
 ])

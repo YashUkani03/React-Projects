@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import appwriteService from '../appwrite/configure';
 import DeleteIcon from '@mui/icons-material/Delete'
 import DehazeIcon from '@mui/icons-material/Dehaze';
-import {Typography} from '@mui/material';
+import { Typography } from '@mui/material';
 import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
@@ -35,6 +35,7 @@ const reorder = (list, startIndex, endIndex) => {
 const DataTable = () => {
     const [tasks, setTasks] = useState([])
 
+    
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -42,8 +43,8 @@ const DataTable = () => {
                 const updatedTasks = documents.map((task) => ({
                     ...task,
                     status: StatusGenerator(task.startDate, task.dueDate),
-                    startDate : formatdate(task.startDate),
-                    dueDate : formatdate(task.dueDate)
+                    startDate: formatdate(task.startDate),
+                    dueDate: formatdate(task.dueDate)
                 }))
                 setTasks(updatedTasks);
             } catch (error) {
@@ -51,7 +52,7 @@ const DataTable = () => {
             }
         };
         fetchTasks();
-    }, []);
+    }, [setTasks]);
 
     const handleDelete = async (id) => {
         try {

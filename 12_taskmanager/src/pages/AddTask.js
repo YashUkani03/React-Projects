@@ -5,9 +5,11 @@ import appwriteService from '../appwrite/configure';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
+
 const AddTask = (tasks) => {
     // const [task, setTask] = useState(tasks.tasks)
     const navigate = useNavigate()
+    // const location = useLocation()
     const { register, handleSubmit } = useForm({
         defaultValues: {
             title: tasks?.title || '',
@@ -16,14 +18,14 @@ const AddTask = (tasks) => {
             status: tasks?.status || '',
         }
     })
-    
+
 
     const create = async (data) => {
         console.log(data);
         if (data) {
             const userTask = await appwriteService.createTask(data)
             console.log(userTask);
-            navigate('/')
+            navigate( -1);
         }
         // Handle form submission logic here
     };
