@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import LoginForm from './components/Login';
 import Signup from './components/Signup';
 import AddTask from './pages/AddTask';
-import { ColumnTable } from './components';
+import { AuthLayout, ColumnTable } from './components';
 
 const router = createBrowserRouter([
   {
@@ -17,25 +17,37 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: '',
-        element: <Home />,
+        path: '/',
+        element: <Home />
       },
       {
         path: '/login',
-        element: <LoginForm />,
+        element: (
+          <AuthLayout authentication={false}>
+            <LoginForm />
+          </AuthLayout>)
 
       },
       {
         path: '/signup',
-        element: <Signup />
+        element: (
+          <AuthLayout authentication={false}>
+            <Signup />
+          </AuthLayout>)
       },
       {
         path: '/add-task',
-        element: <AddTask />
+        element: (
+          <AuthLayout authentication>
+            <AddTask />
+          </AuthLayout>)
       },
       {
         path: '/columntable',
-        element: <ColumnTable />
+        element: (
+          <AuthLayout authentication>
+            <ColumnTable />
+          </AuthLayout>)
       }
 
     ]

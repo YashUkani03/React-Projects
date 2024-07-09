@@ -4,9 +4,10 @@ import Signup from "./Signup";
 import Home from "../pages/Home";
 import Footer from './Footer/Footer'
 import ColumnTable from "./ColumnTable";
-
+import AuthLayout from "./AuthLayout";
 
 export {
+    AuthLayout,
     ColumnTable,
     Footer,
     Header,

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.userData);
+  const authStatus = useSelector((state) => state.auth.userData);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,7 +21,7 @@ const Header = () => {
         <Typography variant="h6" component={Link} to="/" style={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
           Task Manager
         </Typography>
-        {user ? (
+        {authStatus ?  (
           <>
             <Button color="inherit" onClick={handleLogout}>
               Logout

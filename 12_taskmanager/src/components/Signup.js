@@ -40,7 +40,7 @@ function Signup() {
                 backgroundImage: 'url(https://source.unsplash.com/random)', // Replace with your image URL
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                height: '100vh',
+                height: '70vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
