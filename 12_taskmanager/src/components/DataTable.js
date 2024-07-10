@@ -6,19 +6,6 @@ import { Typography } from '@mui/material';
 import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
-const StatusGenerator = (startDate, dueDate) => {
-    const today = new Date().setHours(0, 0, 0, 0)
-    const start = new Date(startDate).setHours(0, 0, 0, 0)
-    const end = new Date(dueDate).setHours(0, 0, 0, 0)
-    if (today < start) {
-        return 'Scheduled'
-    } else if (today >= start && today <= end) {
-        return 'In-progress'
-    }
-    else {
-        return 'Completed'
-    }
-}
 
 const formatdate = (date) => {
     return new Date(date).toLocaleDateString()
@@ -34,7 +21,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 const DataTable = () => {
     const [tasks, setTasks] = useState([])
-
+    
     
     useEffect(() => {
         const fetchTasks = async () => {
@@ -42,7 +29,6 @@ const DataTable = () => {
                 const documents = await appwriteService.getTasks();
                 const updatedTasks = documents.map((task) => ({
                     ...task,
-                    status: StatusGenerator(task.startDate, task.dueDate),
                     startDate: formatdate(task.startDate),
                     dueDate: formatdate(task.dueDate)
                 }))
@@ -54,6 +40,9 @@ const DataTable = () => {
         fetchTasks();
     }, [setTasks]);
 
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }, [tasks]);
     const handleDelete = async (id) => {
         try {
             // Optimistically update UI to mark task as deleting

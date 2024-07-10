@@ -3,14 +3,14 @@ import React from 'react';
 import { Button, Link, TextField } from '@mui/material';
 import appwriteService from '../appwrite/configure';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-
+import { useForm, Controller } from 'react-hook-form';
+import { InputLabel, Select, MenuItem, FormControl } from '@mui/material';
 
 const AddTask = (tasks) => {
     // const [task, setTask] = useState(tasks.tasks)
     const navigate = useNavigate()
     // const location = useLocation()
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, control } = useForm({
         defaultValues: {
             title: tasks?.title || '',
             startDate: tasks?.startDate || '',
@@ -18,14 +18,30 @@ const AddTask = (tasks) => {
             status: tasks?.status || '',
         }
     })
-
+    const StatusGenerator = (startDate, dueDate) => {
+        const today = new Date().setHours(0, 0, 0, 0)
+        const start = new Date(startDate).setHours(0, 0, 0, 0)
+        const end = new Date(dueDate).setHours(0, 0, 0, 0)
+        if (today < start) {
+            return 'Scheduled'
+        } else if (today >= start && today <= end) {
+            return 'In-progress'
+        }
+        else {
+            return 'Completed'
+        }
+    }
 
     const create = async (data) => {
-        console.log(data);
         if (data) {
-            const userTask = await appwriteService.createTask(data)
-            console.log(userTask);
-            navigate( -1);
+            const { startDate, dueDate } = data;
+            const status = StatusGenerator(startDate , dueDate)
+            const task = {...data , status : status}
+            console.log(task);
+            if (task) {
+                await appwriteService.createTask(task)
+                navigate(-1);
+            }
         }
         // Handle form submission logic here
     };
@@ -82,6 +98,25 @@ const AddTask = (tasks) => {
                     }}
                     required
                 />
+                <FormControl fullWidth margin="normal">
+                    <InputLabel id="status-label">Status</InputLabel>
+                    <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                            <Select
+                                labelId="status-label"
+                                id="status"
+                                label="Status"
+                                {...field}
+                            >
+                                <MenuItem value="Scheduled">Scheduled</MenuItem>
+                                <MenuItem value="In Progress">In Progress</MenuItem>
+                                <MenuItem value="Completed">Completed</MenuItem>
+                            </Select>
+                        )}
+                    />
+                </FormControl>
                 <br />
                 <Link>
                     <Button
