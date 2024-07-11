@@ -26,8 +26,12 @@ function App() {
 
   return !loading ? (
     <div className="flex flex-col min-h-screen">
-      < Header />
-      <Outlet />
+      <div className="flex-grow">
+        <div className="p-4">
+          <Header />
+          <Outlet />
+        </div>
+      </div>
       <Footer />
     </div>
   )

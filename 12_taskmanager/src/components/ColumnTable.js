@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import appwriteService from '../appwrite/configure';
 import { Container, Typography, Button, IconButton } from '@mui/material';
@@ -8,6 +8,9 @@ import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import { TextField } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check'
+import ClearIcon from '@mui/icons-material/Clear';
 
 const formatdate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -17,9 +20,52 @@ const ColumnTable = () => {
     const navigate = useNavigate();
     const [tasks, setTasks] = React.useState({
         Scheduled: [],
-        inProgress: [],
-        completed: []
+        InProgress: [],
+        Completed: []
     });
+
+    const [newtask, setNewTask] = useState('')
+    const [showForm, setShowForm] = useState({
+        Scheduled: false,
+        InProgress: false,
+        Completed: false
+    });
+
+    const handleAddTask = async (columnId) => {
+        try {
+            const task = {
+                title: newtask,
+                startDate: new Date().toLocaleString(),  // Set current date as start date
+                dueDate: new Date().toLocaleString(),  // Set current date as due date
+                status: columnId
+            };
+            const createdTask = await appwriteService.createTask(task);
+            console.log('Created Task:', createdTask);  // Log the created task
+            setTasks((prevTasks) => ({
+                ...prevTasks,
+                [columnId]: [...prevTasks[columnId], { ...createdTask, title: newtask, startDate: formatdate(createdTask.startDate), dueDate: formatdate(createdTask.dueDate) }],
+            }));
+            localStorage.setItem('coltask', JSON.stringify(createdTask))
+
+
+            setNewTask('');
+            setShowForm((prev) => ({
+                ...prev,
+                [columnId]: false
+            }));
+        } catch (error) {
+            console.error("Error adding task:", error);
+        }
+    };
+
+    const toggleForm = (columnId) => {
+        setShowForm((prev) => ({
+            ...prev,
+            [columnId]: !prev[columnId]
+        }));
+    };
+
+
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -32,17 +78,30 @@ const ColumnTable = () => {
 
                 const organizedTasks = {
                     Scheduled: updatedTasks.filter(task => task.status === 'Scheduled'),
-                    InProgress: updatedTasks.filter(task => task.status === 'In-progress'),
-                    completed: updatedTasks.filter(task => task.status === 'Completed'),
+                    InProgress: updatedTasks.filter(task => task.status === 'InProgress'),
+                    Completed: updatedTasks.filter(task => task.status === 'Completed'),
                 };
 
                 setTasks(organizedTasks);
+                localStorage.setItem('coltask', JSON.stringify(organizedTasks))
             } catch (error) {
                 console.log("Error", error);
             }
         };
+        const storedTasks = localStorage.getItem('coltask');
+        try {
+            setTasks(JSON.parse(storedTasks));
+        } catch (error) {
+            console.error("Error parsing tasks from localStorage:", error);
+            // Handle error parsing tasks from localStorage
+        }
         fetchTasks();
     }, [setTasks]);
+
+    // useEffect(()=>{
+    //     const task = localStorage.getItem('coltask')
+    //     setTasks(JSON.parse(task))
+    // },[tasks , setTasks])
 
     const onDragEnd = async (result) => {
         if (!result.destination) return;
@@ -121,7 +180,7 @@ const ColumnTable = () => {
                         <Droppable droppableId={columnId} key={columnId}>
                             {(provided) => (
                                 <div
-                                    className="bg-gray-200 p-4 w-1/3 rounded"
+                                    className="bg-gray-400 p-4 w-1/3 rounded"
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                 >
@@ -144,15 +203,41 @@ const ColumnTable = () => {
                                         </Draggable>
                                     ))}
                                     {provided.placeholder}
-                                    <Button
-                                    variant='outlined'
-                                    style={{color:'darkslategray',
-                                        borderColor: 'darkslategray',
-                                        
-                                    }}
-                                    >
-                                        <AddBoxIcon />
-                                    </Button>
+                                    {showForm[columnId] ? (
+                                        <div className="mt-4">
+                                            <TextField
+                                                label="Task Title"
+                                                fullWidth
+                                                value={newtask}
+                                                onChange={(e) => setNewTask(e.target.value)}
+                                                margin="dense"
+                                            />
+                                            <Button
+                                                onClick={() => handleAddTask(columnId)}
+                                                variant="contained"
+                                                color="success"
+                                                style={{ marginTop: '10px' }}
+                                            >
+                                                <CheckIcon />
+                                            </Button>
+                                            <Button
+                                                onClick={() => toggleForm(columnId)}
+                                                variant="contained"
+                                                color="error"
+                                                style={{ marginTop: '10px', marginLeft: '10px' }}
+                                            >
+                                                <ClearIcon />
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <Button
+                                            style={{ color: 'darkslategray' }}
+                                            onClick={() => toggleForm(columnId)}
+                                        >
+                                            <AddBoxIcon />
+                                        </Button>
+                                    )}
+
                                 </div>
                             )}
                         </Droppable>

@@ -10,9 +10,9 @@ export default function AuthLayout({ children, authentication = true }) {
 
     useEffect(() => {
         if (authStatus && authStatus !== authentication) {
-            navigate('/login')
-        } else if (!authStatus && authStatus !== authentication) {
             navigate('/')
+        } else if (!authStatus && authStatus !== authentication) {
+            navigate('/login')
         }
         setLoader(false)
     }, [navigate, authStatus, authentication])

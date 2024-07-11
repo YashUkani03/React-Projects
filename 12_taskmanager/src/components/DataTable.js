@@ -33,6 +33,8 @@ const DataTable = () => {
                     dueDate: formatdate(task.dueDate)
                 }))
                 setTasks(updatedTasks);
+
+                localStorage.setItem('tasks', JSON.stringify(updatedTasks));
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             }
@@ -41,23 +43,20 @@ const DataTable = () => {
     }, [setTasks]);
 
     useEffect(() => {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+       const task =  localStorage.getItem('tasks', JSON.stringify(tasks));
+        setTasks(JSON.parse(task))
     }, [tasks]);
     const handleDelete = async (id) => {
         try {
-            // Optimistically update UI to mark task as deleting
             setTasks(tasks.map(task =>
                 task.$id === id ? { ...task, isDeleting: true } : task
             ));
 
-            // Delete task from database
             await appwriteService.deleteTask(id);
 
-            // Update state to remove task from UI
             setTasks(tasks.filter(task => task.$id !== id));
         } catch (error) {
             console.error('Error deleting task:', error);
-            // Rollback UI changes if deletion fails
             setTasks(tasks.map(task =>
                 task.$id === id ? { ...task, isDeleting: false } : task
             ));
@@ -78,7 +77,7 @@ const DataTable = () => {
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable">
                 {(provided) => (
-                    <TableContainer component={Paper} {...provided.droppableProps} ref={provided.innerRef}>
+                    <TableContainer component={Paper} style={{backgroundColor: 'whitesmoke'}} {...provided.droppableProps} ref={provided.innerRef}>
                         <Table>
                             <TableHead>
                                 <TableRow>

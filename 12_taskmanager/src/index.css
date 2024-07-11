@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+:root{
+    /* background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSamxLoP2fjCog2OKCwmHagetpsExTGOaninw&s'); */
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfJpynvFJ-X-905qKGFmxyuDs5xS6SVLMhBg&s');
+    background-size: cover;
+}
