@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import appwriteService from '../appwrite/configure';
-import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteIcon from '@mui/icons-material/Delete';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import { Typography } from '@mui/material';
 import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-
 
 const formatdate = (date) => {
     return new Date(date).toLocaleDateString()
 }
 
 const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list)
-    const [removed] = result.splice(startIndex, 1)
-    result.splice(endIndex, 0, removed)
-
-    return result
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
 }
 
 const DataTable = () => {
-    const [tasks, setTasks] = useState([])
-    
-    
+    const [tasks, setTasks] = useState([]);
+
     useEffect(() => {
         const fetchTasks = async () => {
             try {
@@ -31,21 +28,22 @@ const DataTable = () => {
                     ...task,
                     startDate: formatdate(task.startDate),
                     dueDate: formatdate(task.dueDate)
-                }))
+                }));
                 setTasks(updatedTasks);
-
                 localStorage.setItem('tasks', JSON.stringify(updatedTasks));
             } catch (error) {
                 console.error('Error fetching tasks:', error);
             }
         };
         fetchTasks();
-    }, [setTasks]);
+    }, []); // Empty dependency array, runs once on mount
 
     useEffect(() => {
-       const task =  localStorage.getItem('tasks', JSON.stringify(tasks));
-        setTasks(JSON.parse(task))
-    }, [tasks]);
+        // Load tasks from localStorage on component mount
+        const tasksFromStorage = JSON.parse(localStorage.getItem('tasks')) || [];
+        setTasks(tasksFromStorage);
+    }, []); // Empty dependency array, runs once on mount
+
     const handleDelete = async (id) => {
         try {
             setTasks(tasks.map(task =>
@@ -64,20 +62,21 @@ const DataTable = () => {
     };
 
     const onDragEnd = (result) => {
-        const { source, destination } = result
-        if (!result.destination) {
+        const { source, destination } = result;
+        if (!destination) {
             return;
         }
 
-        const reorderedTasks = reorder(tasks, source.index, destination.index)
-        setTasks(reorderedTasks)
-    }
+        const reorderedTasks = reorder(tasks, source.index, destination.index);
+        setTasks(reorderedTasks);
+        localStorage.setItem('tasks', JSON.stringify(reorderedTasks));
+    };
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable">
                 {(provided) => (
-                    <TableContainer component={Paper} style={{backgroundColor: 'whitesmoke'}} {...provided.droppableProps} ref={provided.innerRef}>
+                    <TableContainer component={Paper} style={{ backgroundColor: 'whitesmoke' }} {...provided.droppableProps} ref={provided.innerRef}>
                         <Table>
                             <TableHead>
                                 <TableRow>
@@ -139,8 +138,7 @@ const DataTable = () => {
                 )}
             </Droppable>
         </DragDropContext>
-    )
-
+    );
 };
 
 export default DataTable;
