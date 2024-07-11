@@ -3,11 +3,14 @@ import appwriteService from '../appwrite/configure';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DehazeIcon from '@mui/icons-material/Dehaze';
 import { Typography } from '@mui/material';
+import { TextField } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save'
+import EditIcon from '@mui/icons-material/Edit'
 import { Table, TableCell, TableBody, TableHead, TableRow, TableContainer, Paper, Button } from '@mui/material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const formatdate = (date) => {
-    return new Date(date).toLocaleDateString()
+    return new Date(date).toDateString()
 }
 
 const reorder = (list, startIndex, endIndex) => {
@@ -19,6 +22,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 const DataTable = () => {
     const [tasks, setTasks] = useState([]);
+    const [editTaskId, setEditTaskId] = useState(null)
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -61,6 +65,26 @@ const DataTable = () => {
         }
     };
 
+    const handleEdit = (id) => {
+        setEditTaskId(id);
+    };
+
+    const handleSave = async (editedTask) => {
+        try {
+            const updatedTasks = tasks.map(task =>
+                task.$id === editedTask.$id ? editedTask : task
+            );
+
+            setTasks(updatedTasks);
+            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+
+            await appwriteService.updateTasks(editedTask.$id, editedTask)
+            setEditTaskId(null); // Exit edit mode
+        } catch (error) {
+            console.error('Error saving task:', error);
+        }
+    };
+
     const onDragEnd = (result) => {
         const { source, destination } = result;
         if (!destination) {
@@ -80,12 +104,14 @@ const DataTable = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell width={10}></TableCell>
-                                    <TableCell width={600}>Title</TableCell>
-                                    <TableCell width={150}>Start Date</TableCell>
-                                    <TableCell width={150}>Due Date</TableCell>
-                                    <TableCell width={130}>Status</TableCell>
-                                    <TableCell width={30}></TableCell>
+                                    <>
+                                        <TableCell width={10}></TableCell>
+                                        <TableCell width={500} ><strong>Title</strong></TableCell>
+                                        <TableCell width={150} style={{ textAlign: 'center' }}><strong>Start Date</strong></TableCell>
+                                        <TableCell width={150} style={{ textAlign: 'center' }}><strong>Due Date</strong></TableCell>
+                                        <TableCell width={100} style={{ textAlign: 'center' }}><strong>Status</strong></TableCell>
+                                        <TableCell ></TableCell>
+                                    </>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -113,11 +139,38 @@ const DataTable = () => {
                                                     <TableCell>
                                                         <DehazeIcon />
                                                     </TableCell>
-                                                    <TableCell>{task.title}</TableCell>
+                                                    <TableCell>
+                                                        {editTaskId === task.$id ? (
+                                                            <TextField
+                                                                autoFocus
+                                                                value={task.title}
+                                                                onChange={(e) => setTasks(tasks.map(t =>
+                                                                    t.$id === task.$id ? { ...t, title: e.target.value } : t
+                                                                ))}
+                                                            />
+                                                        ) : (
+                                                            task.title
+                                                        )}
+                                                    </TableCell>
                                                     <TableCell>{task.startDate}</TableCell>
                                                     <TableCell>{task.dueDate}</TableCell>
                                                     <TableCell>{task.status}</TableCell>
                                                     <TableCell>
+                                                        {editTaskId === task.$id ? (
+                                                            <Button
+                                                                onClick={() => handleSave(task)}
+                                                                style={{ color: 'green' }}
+                                                            >
+                                                                <SaveIcon />
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                onClick={() => handleEdit(task.$id)}
+                                                                style={{ color: 'grey' }}
+                                                            >
+                                                                <EditIcon />
+                                                            </Button>
+                                                        )}
                                                         <Button
                                                             style={{ color: 'grey' }}
                                                             onClick={() => handleDelete(task.$id)}

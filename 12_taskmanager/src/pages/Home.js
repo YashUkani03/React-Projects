@@ -61,7 +61,7 @@ const HomePage = () => {
                 <div><br />
                     <Typography variant="h4" component="h1" gutterBottom >
                         Your Tasks
-                        <Button style={{ marginLeft: 920 }}
+                        <Button style={{ marginLeft: 920 , color: 'black' }}
                             onClick={ChangePage}
                         >
                             <GridViewIcon />

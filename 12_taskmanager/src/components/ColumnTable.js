@@ -3,14 +3,15 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import appwriteService from '../appwrite/configure';
 import { Container, Typography, Button, IconButton } from '@mui/material';
 import TableRowsIcon from '@mui/icons-material/TableRows';
-import { useNavigate, Link } from 'react-router-dom';
-import { Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { TextField } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check'
 import ClearIcon from '@mui/icons-material/Clear';
+import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckIcon from '@mui/icons-material/Check';
+
 
 const formatdate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -23,6 +24,8 @@ const ColumnTable = () => {
         InProgress: [],
         Completed: []
     });
+    const [editTaskId, setEditTaskId] = useState(null);
+    const [editTaskTitle, setEditTaskTitle] = useState('');
 
     const [newtask, setNewTask] = useState('')
     const [showForm, setShowForm] = useState({
@@ -47,6 +50,7 @@ const ColumnTable = () => {
             }));
             localStorage.setItem('coltask', JSON.stringify(createdTask))
 
+            await appwriteService.updateTasks(columnId.$id, columnId)
 
             setNewTask('');
             setShowForm((prev) => ({
@@ -93,15 +97,11 @@ const ColumnTable = () => {
             setTasks(JSON.parse(storedTasks));
         } catch (error) {
             console.error("Error parsing tasks from localStorage:", error);
-            // Handle error parsing tasks from localStorage
         }
         fetchTasks();
     }, [setTasks]);
 
-    // useEffect(()=>{
-    //     const task = localStorage.getItem('coltask')
-    //     setTasks(JSON.parse(task))
-    // },[tasks , setTasks])
+
 
     const onDragEnd = async (result) => {
         if (!result.destination) return;
@@ -148,8 +148,46 @@ const ColumnTable = () => {
 
 
 
+    const handleEditTask = async (taskId, newTitle) => {
+        try {
+            // Update task in backend
+            await appwriteService.updateTasks(taskId, {
+                title: newTitle,
+            });
+
+            // Update state with edited task
+            const updatedTasks = { ...tasks };
+            const taskToUpdate = updatedTasks.Scheduled.find(task => task.$id === taskId)
+                || updatedTasks.InProgress.find(task => task.$id === taskId)
+                || updatedTasks.Completed.find(task => task.$id === taskId);
+            if (taskToUpdate) {
+                taskToUpdate.title = newTitle;
+                setTasks(updatedTasks);
+
+                // Update localStorage with updated tasks
+                localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+            }
+        } catch (error) {
+            console.error("Error updating task:", error);
+        } finally {
+            setEditTaskId(null);
+            setEditTaskTitle('');
+        }
+    };
+
+
     const ChangePage = () => {
         navigate('/');
+    };
+
+    const handleStartEdit = (taskId, taskTitle) => {
+        setEditTaskId(taskId);
+        setEditTaskTitle(taskTitle);
+    };
+
+    const handleCancelEdit = () => {
+        setEditTaskId(null);
+        setEditTaskTitle('');
     };
 
     const handleDelete = async (taskId, columnId) => {
@@ -169,7 +207,7 @@ const ColumnTable = () => {
             <div><br />
                 <Typography variant="h4" component="h1" gutterBottom >
                     Your Tasks
-                    <Button style={{ marginLeft: 920 }} onClick={ChangePage}>
+                    <Button style={{ marginLeft: 920, color: 'black' }} onClick={ChangePage}>
                         <TableRowsIcon />
                     </Button>
                 </Typography>
@@ -194,10 +232,48 @@ const ColumnTable = () => {
                                                     {...provided.draggableProps}
                                                     {...provided.dragHandleProps}
                                                 >
-                                                    <div>{task.title}</div>
-                                                    <IconButton onClick={() => handleDelete(task.$id, columnId)} aria-label="delete">
-                                                        <DeleteIcon />
-                                                    </IconButton>
+                                                    {editTaskId === task.$id ? (
+                                                        <TextField
+                                                            value={editTaskTitle}
+                                                            onChange={(e) => setEditTaskTitle(e.target.value)}
+                                                            margin="dense"
+                                                        />
+                                                    ) : (
+                                                        <div>{task.title}</div>
+                                                    )}
+                                                    <div>
+                                                        {editTaskId === task.$id ? (
+                                                            <>
+                                                                <IconButton
+                                                                    onClick={() => handleEditTask(task.$id, editTaskTitle)}
+                                                                    aria-label="save"
+                                                                >
+                                                                    <CheckIcon />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    onClick={handleCancelEdit}
+                                                                    aria-label="cancel"
+                                                                >
+                                                                    <CancelIcon />
+                                                                </IconButton>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <IconButton
+                                                                    onClick={() => handleStartEdit(task.$id, task.title)}
+                                                                    aria-label="edit"
+                                                                >
+                                                                    <EditIcon />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    onClick={() => handleDelete(task.$id, columnId)}
+                                                                    aria-label="delete"
+                                                                >
+                                                                    <DeleteIcon />
+                                                                </IconButton>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             )}
                                         </Draggable>
@@ -244,19 +320,7 @@ const ColumnTable = () => {
                     ))}
                 </div>
             </DragDropContext>
-            <Link to='/add-task'>
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    style={{
-                        position: 'fixed',
-                        bottom: '130px',
-                        right: '80px',
-                    }}
-                >
-                    <AddIcon />
-                </Fab>
-            </Link>
+
         </Container>
     );
 };
